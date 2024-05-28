@@ -1,7 +1,11 @@
 import {CustomButton, CustomHeader, MovieList, SearchBar} from '../components';
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
-import {getGenre, getMoviesByYear} from '../services/movieServices';
+import {
+  getGenre,
+  getMoviesByGenre,
+  getMoviesByYear,
+} from '../services/movieServices';
 import {GenreObject} from '../types/commonTypes';
 import {GenreList} from '../components';
 import colors from '../styles/colors';
@@ -101,11 +105,11 @@ const tempGenre = [
 ];
 
 const HomeScreen: React.FC<HomeScreenType> = ({}) => {
-  const [genreList, setgenreList] = useState<GenreObject | any>([]); //[]
+  const [genreList, setGenreList] = useState<GenreObject | any>([]); //[]
   const [moviesByYear, setMoviesByYear] = useState<any[]>([]); //[]
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null); //null
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [recentFetchedYear, setrecentFetchedYear] = useState<number>(2012);
+  const [recentFetchedYear, setRecentFetchedYear] = useState<number>(2012);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -114,10 +118,26 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
     fetchMoviesByYear(recentFetchedYear, 'old');
   }, []);
 
+  useEffect(() => {
+    console.log('🚀 ~ useEffect ~ selectedGenre:', selectedGenre);
+    if (selectedGenre !== null) {
+      const fetchMoviesByGenre = async () => {
+        const moviesData = await getMoviesByGenre(selectedGenre);
+        console.log('🚀 ~ fetchMoviesByGenre ~ moviesData:', moviesData);
+      };
+
+      fetchMoviesByGenre();
+    }
+  }, [selectedGenre]);
+
+  useEffect(() => {
+    console.log('SEARCH TEXT', searchQuery);
+  }, [searchQuery]);
+
   const fetchGenre = async () => {
     try {
       const result: any = await getGenre();
-      setgenreList(result);
+      setGenreList(result);
     } catch (err) {
       console.log('ERROR', err);
     }
@@ -128,6 +148,8 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
       let moviesByYearTemp: any = moviesByYear;
 
       setLoading(true);
+      console.log('-----------------------------------------------');
+      console.log('REQUEST', year, dirn);
       const response = await getMoviesByYear({
         primary_release_year: year,
         vote_count: {
@@ -136,7 +158,6 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
         page: 1,
         sort_by: 'popularity.desc',
       });
-      console.log('API RES ===>', response, dirn, year);
       setLoading(false);
       if (moviesByYearTemp?.length > 0) {
         const newMovieList = {
@@ -155,6 +176,7 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
         ];
       }
       console.log('==============> MOVIES <============== ', moviesByYearTemp);
+      console.log('-----------------------------------------------');
       setMoviesByYear(moviesByYearTemp);
     } catch (err) {
       console.log('ERR', err);
@@ -168,13 +190,13 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
       actionType,
     );
     if (actionType === 'old') {
-      setrecentFetchedYear(recentFetchedYear - 1);
       await fetchMoviesByYear(recentFetchedYear - 1, actionType);
-    } else {
-      if (moviesByYear[0]?.title) {
-        const mostRecentYear = moviesByYear[0]?.title;
+      setRecentFetchedYear(recentFetchedYear - 1);
+    } else if (moviesByYear[0]?.title) {
+      const mostRecentYear = moviesByYear[0]?.title;
+      if (new Date().getFullYear() > mostRecentYear) {
         await fetchMoviesByYear(mostRecentYear + 1, actionType);
-      }
+      } else return;
     }
   };
 

@@ -21,14 +21,11 @@ interface GenreObject {
   name: string;
 }
 
-const API_KEY = '2dca580c2a14b55200e784d157207b4d';
-
 export const getMoviesByYear = async (
   movieParams: MovieParamObject,
 ): Promise<MovieResponse> => {
   const response = await apiClient.get<MovieResponse>(`/discover/movie`, {
     params: {
-      api_key: API_KEY,
       ...movieParams,
     },
   });
@@ -36,13 +33,16 @@ export const getMoviesByYear = async (
 };
 
 export const getGenre = async (): Promise<GenreObject[]> => {
-  const response: any = await apiClient.get<GenreObject[]>(
-    `/genre/movie/list`,
-    {
-      params: {
-        api_key: API_KEY,
-      },
-    },
-  );
+  console.log('REQ');
+  const response: any = await apiClient.get<GenreObject[]>(`/genre/movie/list`);
   return response?.data?.genres;
+};
+
+export const getMoviesByGenre = async (genreId: number): Promise<MovieResponse[]> => {
+  const response = await apiClient.get('/discover/movie', {
+    params: {
+      with_genres: genreId,
+    },
+  });
+  return response.data;
 };
