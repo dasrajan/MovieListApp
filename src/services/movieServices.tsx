@@ -46,7 +46,6 @@ export const getGenre = async (): Promise<GenreObject[]> => {
 export const getMoviesByFilter = async (
   movieParams: MovieFilterParamObject,
 ): Promise<MovieResponse[]> => {
-  console.log("🚀 ~ movieParams:", movieParams)
   const response = await apiClient.get('/discover/movie', {
     params: {
       ...movieParams,

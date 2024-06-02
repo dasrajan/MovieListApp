@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import styles from './MovieListStyle';
 import MovieCard from '../MovieCard';
+import {MovieObject} from '../../types/commonTypes';
 
 interface MovieListType {
   movies: any[];
@@ -35,6 +36,15 @@ const MovieList: React.FC<MovieListType> = ({
 }) => {
   const [refreshing, setRefreshing] = useState(false);
 
+  const processRowData = (movies: any) => {
+    const newSectionListRow = movies?.map((section: any) => ({
+      ...section,
+      data: formatData(section.data, 2),
+      id: section?.title,
+    }));
+    return newSectionListRow;
+  };
+
   const formatData = (data: Movie[], numColumns: number): Movie[][] => {
     const numberOfFullRows = Math.floor(data.length / numColumns);
 
@@ -59,7 +69,6 @@ const MovieList: React.FC<MovieListType> = ({
       acc[rowIndex].push(item);
       return acc;
     }, []);
-    // console.log('FORMATTTED DATA RES', formattedData);
     return formattedData;
   };
 
@@ -82,13 +91,10 @@ const MovieList: React.FC<MovieListType> = ({
     <View style={styles.container}>
       <SectionList
         sections={movies}
-        // sections={movies?.map(section => ({
-        //   ...section,
-        //   data: formatData(section.data, 2),
-        // }))}
+        // sections={processRowData(movies)}
         renderSectionHeader={renderSectionHeader}
         renderItem={renderSection}
-        keyExtractor={useCallback((item: Movie) => item.id, [])}
+        keyExtractor={useCallback((item: Movie) => item.title, [])}
         onEndReached={fetchMoreDown}
         onEndReachedThreshold={0.5}
         initialNumToRender={10}

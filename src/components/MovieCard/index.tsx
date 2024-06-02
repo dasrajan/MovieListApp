@@ -8,7 +8,7 @@ import colors from '../../styles/colors';
 const MovieCard = React.memo(({movie}: {movie: MovieObject}) => {
   // console.log('MOVIE CARD || ', movie?.title);
   return (
-    <View style={styles.movieContainer} key={movie.id}>
+    <View style={styles.movieContainer}>
       <Image
         source={{
           uri: `https://image.tmdb.org/t/p/w200${movie.poster_path}`,

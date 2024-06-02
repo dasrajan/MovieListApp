@@ -23,7 +23,6 @@ const FilteredMovieList: React.FC<FilteredMovieListType> = ({
   const flatListRef: any = useRef(null);
 
   useEffect(() => {
-    console.log('CHANGE ===========>', searchQuery, genreIds, page);
     if (searchQuery || genreIds) {
       setPage(1);
       setMovies([]);
@@ -33,7 +32,6 @@ const FilteredMovieList: React.FC<FilteredMovieListType> = ({
   }, [query, genreIds]);
 
   useEffect(() => {
-    console.log('CHANGE PAGE ===========>', page);
     if (page > 1) {
       fetchMovies(page);
     }
@@ -59,7 +57,6 @@ const FilteredMovieList: React.FC<FilteredMovieListType> = ({
         with_genres: genreIds.join('|'),
       });
       setLoader(false);
-      console.log('FILTERED MOVIES', pageNo, query, genreIds, response);
       if (pageNo > 1) {
         setMovies([...movies, ...response.results]);
       } else setMovies(response.results);
