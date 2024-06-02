@@ -1,8 +1,15 @@
-import {CustomButton, CustomHeader, MovieList, SearchBar} from '../components';
+import {
+  CustomButton,
+  CustomHeader,
+  FilteredMovieList,
+  MovieList,
+  SearchBar,
+} from '../components';
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
 import {
   getGenre,
+  getMoviesByFilter,
   getMoviesByGenre,
   getMoviesByYear,
 } from '../services/movieServices';
@@ -105,9 +112,9 @@ const tempGenre = [
 ];
 
 const HomeScreen: React.FC<HomeScreenType> = ({}) => {
-  const [genreList, setGenreList] = useState<GenreObject | any>([]); //[]
-  const [moviesByYear, setMoviesByYear] = useState<any[]>([]); //[]
-  const [selectedGenre, setSelectedGenre] = useState<number | null>(null); //null
+  const [genreList, setGenreList] = useState<GenreObject | any>([]);
+  const [moviesByYear, setMoviesByYear] = useState<any[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [recentFetchedYear, setRecentFetchedYear] = useState<number>(2012);
   const [loading, setLoading] = useState(false);
@@ -117,22 +124,6 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
     fetchGenre();
     fetchMoviesByYear(recentFetchedYear, 'old');
   }, []);
-
-  useEffect(() => {
-    console.log('🚀 ~ useEffect ~ selectedGenre:', selectedGenre);
-    if (selectedGenre !== null) {
-      const fetchMoviesByGenre = async () => {
-        const moviesData = await getMoviesByGenre(selectedGenre);
-        console.log('🚀 ~ fetchMoviesByGenre ~ moviesData:', moviesData);
-      };
-
-      fetchMoviesByGenre();
-    }
-  }, [selectedGenre]);
-
-  useEffect(() => {
-    console.log('SEARCH TEXT', searchQuery);
-  }, [searchQuery]);
 
   const fetchGenre = async () => {
     try {
@@ -148,8 +139,6 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
       let moviesByYearTemp: any = moviesByYear;
 
       setLoading(true);
-      console.log('-----------------------------------------------');
-      console.log('REQUEST', year, dirn);
       const response = await getMoviesByYear({
         primary_release_year: year,
         vote_count: {
@@ -175,8 +164,12 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
           },
         ];
       }
-      console.log('==============> MOVIES <============== ', moviesByYearTemp);
-      console.log('-----------------------------------------------');
+      console.log(
+        '==============> MOVIES <============== ',
+        year,
+        dirn,
+        moviesByYearTemp,
+      );
       setMoviesByYear(moviesByYearTemp);
     } catch (err) {
       console.log('ERR', err);
@@ -185,10 +178,6 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
   };
 
   const fetchMoreYears = async (actionType: string) => {
-    console.log(
-      '++++++++++++++++++ NEW YEAR FETCH ++++++++++++++++++',
-      actionType,
-    );
     if (actionType === 'old') {
       await fetchMoviesByYear(recentFetchedYear - 1, actionType);
       setRecentFetchedYear(recentFetchedYear - 1);
@@ -198,6 +187,12 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
         await fetchMoviesByYear(mostRecentYear + 1, actionType);
       } else return;
     }
+  };
+
+  const updateGenreIds = (id: number) => {
+    if (selectedGenre.includes(id)) {
+      setSelectedGenre(selectedGenre.filter((item: number) => item !== id));
+    } else setSelectedGenre([...selectedGenre, id]);
   };
 
   return (
@@ -216,15 +211,20 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
       <GenreList
         data={genreList}
         activeId={selectedGenre}
-        setGenre={(id: any) => setSelectedGenre(id)}
+        setGenre={(id: any) => updateGenreIds(id)}
       />
-      {moviesByYear?.length > 0 && (
-        <MovieList
-          movies={moviesByYear}
-          fetchMoreDown={() => fetchMoreYears('old')}
-          fetchMoreUp={() => fetchMoreYears('new')}
-          loading={loading}
-        />
+      {moviesByYear?.length > 0 &&
+        searchQuery === '' &&
+        selectedGenre?.length === 0 && (
+          <MovieList
+            movies={moviesByYear}
+            fetchMoreDown={() => fetchMoreYears('old')}
+            fetchMoreUp={() => fetchMoreYears('new')}
+            loading={loading}
+          />
+        )}
+      {(searchQuery !== '' || selectedGenre?.length > 0) && (
+        <FilteredMovieList searchQuery={searchQuery} genreIds={selectedGenre} />
       )}
     </SafeAreaView>
   );

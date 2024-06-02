@@ -6,13 +6,13 @@ import styles from './GenreListStyle';
 
 interface GenreListType {
   data: GenreObject[];
-  activeId: number | null;
+  activeId: number[];
   setGenre: any;
 }
 
 const GenreList: React.FC<GenreListType> = ({data, activeId, setGenre}) => {
   const renderItem = ({item}: any) => {
-    const isActive = activeId === item?.id;
+    const isActive = activeId.includes(item?.id);
     return (
       <TouchableOpacity
         style={[styles.genreContainer, isActive ? styles.activeGenre : {}]}

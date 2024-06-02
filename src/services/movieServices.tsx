@@ -21,6 +21,12 @@ interface GenreObject {
   name: string;
 }
 
+interface MovieFilterParamObject {
+  query?: string;
+  with_genres?: string;
+  page: number;
+}
+
 export const getMoviesByYear = async (
   movieParams: MovieParamObject,
 ): Promise<MovieResponse> => {
@@ -33,15 +39,17 @@ export const getMoviesByYear = async (
 };
 
 export const getGenre = async (): Promise<GenreObject[]> => {
-  console.log('REQ');
   const response: any = await apiClient.get<GenreObject[]>(`/genre/movie/list`);
   return response?.data?.genres;
 };
 
-export const getMoviesByGenre = async (genreId: number): Promise<MovieResponse[]> => {
+export const getMoviesByFilter = async (
+  movieParams: MovieFilterParamObject,
+): Promise<MovieResponse[]> => {
+  console.log("🚀 ~ movieParams:", movieParams)
   const response = await apiClient.get('/discover/movie', {
     params: {
-      with_genres: genreId,
+      ...movieParams,
     },
   });
   return response.data;
