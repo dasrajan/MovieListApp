@@ -34,7 +34,8 @@ To install the project, follow these steps:
    cd MovieListApp
 
 2. Install dependencies
-   ```npm install
+   ```sh
+   npm install
 
 ## Running the App
 
