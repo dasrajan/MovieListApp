@@ -102,7 +102,6 @@ const MovieList: React.FC<MovieListType> = ({
         windowSize={21} // Default is 21 (10 before, 10 after, 1 visible)
         updateCellsBatchingPeriod={50} // Time (in ms) between rendering batches
         removeClippedSubviews={true} // Improve performance by removing offscreen components
-        // getItemLayout={getItemLayout}
         ListFooterComponent={
           loading ? <ActivityIndicator size="large" color="#FFF" /> : null
         }

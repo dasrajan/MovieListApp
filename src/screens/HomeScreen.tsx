@@ -6,110 +6,13 @@ import {
   SearchBar,
 } from '../components';
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, Text, View} from 'react-native';
-import {
-  getGenre,
-  getMoviesByFilter,
-  getMoviesByGenre,
-  getMoviesByYear,
-} from '../services/movieServices';
+import {SafeAreaView} from 'react-native';
+import {getGenre, getMoviesByYear} from '../services/movieServices';
 import {GenreObject} from '../types/commonTypes';
 import {GenreList} from '../components';
 import colors from '../styles/colors';
-import axios from 'axios';
 
 interface HomeScreenType {}
-
-const movieDataEmp = [
-  {
-    id: 1,
-    title: 'Captain America',
-    poster_path: '',
-  },
-  {
-    id: 2,
-    title: 'Captain',
-    poster_path: '',
-  },
-  {
-    id: 3,
-    title: 'Captain America',
-    poster_path: '',
-  },
-  {
-    id: 4,
-    title: 'Captain America',
-    poster_path: '',
-  },
-  {
-    id: 5,
-    title: 'Captain America',
-    poster_path: '',
-  },
-  {
-    id: 6,
-    title: 'Captain America',
-    poster_path: '',
-  },
-  {
-    id: 7,
-    title: 'Captain America',
-    poster_path: '',
-  },
-  {
-    id: 8,
-    title: 'Captain America',
-    poster_path: '',
-  },
-];
-const tempMovieData = [
-  {
-    title: '2012',
-    data: movieDataEmp,
-  },
-  {
-    title: '2013',
-    data: movieDataEmp,
-  },
-  {
-    title: '2014',
-    data: movieDataEmp,
-  },
-];
-const tempGenre = [
-  {
-    id: 1,
-    name: 'Action',
-  },
-  {
-    id: 2,
-    name: 'Thriller',
-  },
-  {
-    id: 3,
-    name: 'Comedy',
-  },
-  {
-    id: 4,
-    name: 'Romantic',
-  },
-  {
-    id: 5,
-    name: 'Action',
-  },
-  {
-    id: 6,
-    name: 'Thriller',
-  },
-  {
-    id: 7,
-    name: 'Comedy',
-  },
-  {
-    id: 8,
-    name: 'Romantic',
-  },
-];
 
 const HomeScreen: React.FC<HomeScreenType> = ({}) => {
   const [genreList, setGenreList] = useState<GenreObject | any>([]);
@@ -120,7 +23,6 @@ const HomeScreen: React.FC<HomeScreenType> = ({}) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log('HOME SCREEN');
     fetchGenre();
     fetchMoviesByYear(recentFetchedYear, 'old');
   }, []);

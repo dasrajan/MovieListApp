@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, Image, Text, TextInput, View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import styles from './FilteredMovieList.Style';
 import {getMoviesByFilter} from '../../services/movieServices';
 import {FlatList} from 'react-native-gesture-handler';

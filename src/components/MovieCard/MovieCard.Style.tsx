@@ -22,8 +22,6 @@ export default StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowRadius: 10,
     elevation: 5,
-    // borderWidth: 0.5,
-    // borderColor: colors.white,
   },
   moviePoster: {
     width: '100%',
